@@ -103,7 +103,7 @@ public class EmailFacade {
                 email.getSubject(),
                 email.getContent(),
                 email.getCreatedDate(),
-                email.getIsSucceed()
+                email.getStatus()
         );
     }
 }

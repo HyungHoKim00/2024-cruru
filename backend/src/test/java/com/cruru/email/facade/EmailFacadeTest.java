@@ -33,6 +33,7 @@ import com.cruru.util.fixture.ApplyFormFixture;
 import com.cruru.util.fixture.EmailFixture;
 import com.cruru.util.fixture.MemberFixture;
 import com.cruru.util.fixture.ProcessFixture;
+import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+@EnableAsync
 @DisplayName("발송 내역 파사드 테스트")
 class EmailFacadeTest extends ServiceTest {
 
@@ -74,10 +77,12 @@ class EmailFacadeTest extends ServiceTest {
     @Test
     void sendAndSave() {
         // given
+        when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         Mockito.doAnswer(invocation -> {
-            TimeUnit.SECONDS.sleep(1);
-            return null;
-        }).when(javaMailSender).send(any(MimeMessage.class));
+                    TimeUnit.SECONDS.sleep(1);
+                    return null;
+                })
+                .when(javaMailSender).send(any(MimeMessage.class));
 
         applyFormRepository.save(ApplyFormFixture.backend(defaultDashboard));
         Process process = processRepository.save(ProcessFixture.applyType(defaultDashboard));
@@ -180,7 +185,7 @@ class EmailFacadeTest extends ServiceTest {
         assertAll(
                 () -> assertThat(emailHistoryResponse.subject()).isEqualTo(email.getSubject()),
                 () -> assertThat(emailHistoryResponse.content()).isEqualTo(email.getContent()),
-                () -> assertThat(emailHistoryResponse.isSucceed()).isEqualTo(email.getIsSucceed())
+                () -> assertThat(emailHistoryResponse.status()).isEqualTo(email.getStatus())
         );
     }
 }
