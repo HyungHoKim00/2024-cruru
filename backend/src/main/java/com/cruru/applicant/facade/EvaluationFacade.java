@@ -50,6 +50,7 @@ public class EvaluationFacade {
     private EvaluationResponse toEvaluationResponse(Evaluation evaluation) {
         return new EvaluationResponse(
                 evaluation.getId(),
+                evaluation.getEvaluator(),
                 evaluation.getScore(),
                 evaluation.getContent(),
                 evaluation.getCreatedDate()
@@ -60,5 +61,10 @@ public class EvaluationFacade {
     public void updateSingleEvaluation(EvaluationUpdateRequest request, Long evaluationId) {
         Evaluation evaluation = evaluationService.findById(evaluationId);
         evaluationService.update(request, evaluation);
+    }
+
+    @Transactional
+    public void delete(long evaluationId) {
+        evaluationService.delete(evaluationId);
     }
 }

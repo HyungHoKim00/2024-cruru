@@ -81,8 +81,8 @@ public class DataLoader implements ApplicationRunner {
         LocalDateTime endDate = LocalDateTime.of(2054, 10, 16, 10, 0, 0);
         dashboardRepository.save(dashboard);
         String description = """
-                             <h2>2025 신입생 (7기) 선발 일정 </h2><p><br></p><ol><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>서류접수:</strong> 2024년 10월 6일(금) 오후 3시 ~ 10월 16일(월) 오전 10시</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>프리코스:</strong> 2024년 10월 19일(목) ~ 11월 15일(수)</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>1차 합격자 발표:</strong> 2024년 12월 11일(월) 오후 3시, 개별 E-mail 통보</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>최종 코딩 테스트:</strong> 2024년 12월 16일(토)</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>최종 합격자 발표:</strong> 2024년 12월 27일(수) 오후 3시, 개별 E-mail 통보 </li></ol><p><br></p><h2>2025 신입생 (7기) 교육 기간 </h2><p><br></p><ol><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span>2025년 2월 ~ 11월 (약 10개월) </li></ol>
-                             """;
+                <h2>2025 신입생 (7기) 선발 일정 </h2><p><br></p><ol><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>서류접수:</strong> 2024년 10월 6일(금) 오후 3시 ~ 10월 16일(월) 오전 10시</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>프리코스:</strong> 2024년 10월 19일(목) ~ 11월 15일(수)</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>1차 합격자 발표:</strong> 2024년 12월 11일(월) 오후 3시, 개별 E-mail 통보</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>최종 코딩 테스트:</strong> 2024년 12월 16일(토)</li><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span><strong>최종 합격자 발표:</strong> 2024년 12월 27일(수) 오후 3시, 개별 E-mail 통보 </li></ol><p><br></p><h2>2025 신입생 (7기) 교육 기간 </h2><p><br></p><ol><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span>2025년 2월 ~ 11월 (약 10개월) </li></ol>
+                """;
         ApplyForm applyForm = new ApplyForm(
                 "우아한테크코스 2025 백엔드 신입생 모집 ",
                 description,
@@ -109,23 +109,23 @@ public class DataLoader implements ApplicationRunner {
         applicantRepository.saveAll(applicants);
 
         Question question1 = questionRepository.save(
-                new Question(LONG_ANSWER, "효과적인 학습 방식과 경험", 1, false, applyForm)
+                new Question(LONG_ANSWER, "효과적인 학습 방식과 경험", "지원자가 학습 과정에서 어떤 방식이 효과적이었는지와 관련 경험을 기술해주세요.", 1, false, applyForm)
         );
 
         Question question2 = questionRepository.save(
-                new Question(LONG_ANSWER, "성장 중 겪은 실패와 극복", 2, false, applyForm)
+                new Question(LONG_ANSWER, "성장 중 겪은 실패와 극복", "성장 과정에서 겪은 실패와 이를 극복하기 위한 노력, 배운 점을 서술해주세요.", 2, false, applyForm)
         );
 
         Question question3 = questionRepository.save(
-                new Question(LONG_ANSWER, "오랜 시간 몰입했던 경험 그리고 도전", 3, false, applyForm)
+                new Question(LONG_ANSWER, "오랜 시간 몰입했던 경험 그리고 도전", "몰입했던 경험과 이를 통해 얻은 결과 및 배운 점에 대해 서술해주세요.", 3, false, applyForm)
         );
 
         Question question4 = questionRepository.save(
-                new Question(LONG_ANSWER, "오랜 시간 몰입했던 경험 그리고 도전", 4, false, applyForm)
+                new Question(LONG_ANSWER, "오랜 시간 몰입했던 경험 그리고 도전", "우아한테크코스에 지원하게 된 계기와 프로그램을 통해 이루고 싶은 목표를 작성해주세요.", 4, false, applyForm)
         );
 
         Question question5 = questionRepository.save(
-                new Question(MULTIPLE_CHOICE, "지원 경로", 5, false, applyForm)
+                new Question(MULTIPLE_CHOICE, "지원 경로", "우아한테크코스를 알게 된 경로를 선택해주세요.", 5, false, applyForm)
         );
 
         Choice homepage = choiceRepository.save(new Choice("우아한테크코스 홈페이지", 1, question5));
@@ -134,7 +134,7 @@ public class DataLoader implements ApplicationRunner {
         Choice socialMedia = choiceRepository.save(new Choice("소셜 미디어", 4, question5));
 
         Question question6 = questionRepository.save(
-                new Question(SINGLE_CHOICE, "모든 문항에 답했는지 확인해주세요. 제출 후에 수정이 불가능합니다.", 6, false, applyForm)
+                new Question(SINGLE_CHOICE, "모든 문항에 답했는지 확인해주세요. 제출 후에 수정이 불가능합니다.", null, 6, false, applyForm)
         );
 
         Choice yes = choiceRepository.save(new Choice("네, 확인했습니다.", 1, question6));
@@ -335,22 +335,22 @@ public class DataLoader implements ApplicationRunner {
         answerRepository.saveAll(answers);
 
         List<Evaluation> evaluations = List.of(
-                new Evaluation(5, "우수한 실력", firstProcess, lurgi),
-                new Evaluation(4, "좋은 잠재력", codingTest, lurgi),
-                new Evaluation(3, "노력 필요", firstProcess, dobby),
-                new Evaluation(5, "매우 긍정적", codingTest, dobby),
-                new Evaluation(3, "성장 가능성", firstProcess, arrr),
-                new Evaluation(4, "기본기 탄탄", codingTest, arrr),
-                new Evaluation(4, "뛰어난 이해력", firstProcess, chocochip),
-                new Evaluation(5, "매우 뛰어남", codingTest, chocochip),
-                new Evaluation(2, "열정적", firstProcess, myungoh),
-                new Evaluation(1, "개선 필요", codingTest, myungoh),
-                new Evaluation(5, "빠른 학습 능력", firstProcess, rush),
-                new Evaluation(1, "-> 불합격", codingTest, rush),
-                new Evaluation(4, "꼼꼼함", firstProcess, nyangin),
-                new Evaluation(4, "전과 동일", codingTest, nyangin),
-                new Evaluation(3, "예술적 감각", firstProcess, redpanda),
-                new Evaluation(4, "좋은 평가", codingTest, redpanda)
+                new Evaluation("김도엽", 5, "우수한 실력", firstProcess, lurgi),
+                new Evaluation("권기호", 4, "좋은 잠재력", codingTest, lurgi),
+                new Evaluation("최가희", 3, "노력 필요", firstProcess, dobby),
+                new Evaluation("박정우", 5, "매우 긍정적", codingTest, dobby),
+                new Evaluation("김형호", 3, "성장 가능성", firstProcess, arrr),
+                new Evaluation("홍성진", 4, "기본기 탄탄", codingTest, arrr),
+                new Evaluation("김다은", 4, "뛰어난 이해력", firstProcess, chocochip),
+                new Evaluation("이태훈", 5, "매우 뛰어남", codingTest, chocochip),
+                new Evaluation("김도엽", 2, "열정적", firstProcess, myungoh),
+                new Evaluation("권기호", 1, "개선 필요", codingTest, myungoh),
+                new Evaluation("최가희", 5, "빠른 학습 능력", firstProcess, rush),
+                new Evaluation("박정우", 1, "-> 불합격", codingTest, rush),
+                new Evaluation("김형호", 4, "꼼꼼함", firstProcess, nyangin),
+                new Evaluation("홍성진", 4, "전과 동일", codingTest, nyangin),
+                new Evaluation("김다은", 3, "예술적 감각", firstProcess, redpanda),
+                new Evaluation("이태훈", 4, "좋은 평가", codingTest, redpanda)
         );
         evaluationRepository.saveAll(evaluations);
     }

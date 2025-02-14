@@ -16,6 +16,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.SUBMODULE_PAT }}
+        fetch-depth: 0
+        submodules: true
 
     - name: Set timezone to Korea
       uses: szenius/set-timezone@v2.0
@@ -66,105 +70,32 @@ jobs:
     environment: dev
     runs-on: [self-hosted, be-dev]
     needs: build
-    defaults:
-      run:
-        working-directory: backend
+    
     steps:
-    - name: Set docker-compose YAML script to runner
-      uses: actions/download-artifact@v4
+    - name: Checkout private repository for deploy files
+      uses: actions/checkout@v4
       with:
-        name: docker-compose
-        path: ${{ github.workspace }}/backend
-
+        repository: ${{ secrets.PRIVATE_REPOSITORY_URL }}
+        token: ${{ secrets.SUBMODULE_PAT }}
+        fetch-depth: 0
+        path: dev-files-temp
+        
+    - name: Sync deploy files
+      run: |
+        mkdir -p dev-files/develop
+        rsync -av --exclude='log' dev-files-temp/develop/ dev-files/develop/
+        
     - name: Extract secrets as .env file
       run: |
-        cat <<EOF > .env
+        cat <<EOF > ./dev-files/develop/.env
         # Docker Hub info from Github Secrets
-        DOCKER_REPO_NAME=${{ secrets.DOCKER_REPO_NAME }}
         DOCKER_IMAGE_VERSION_TAG=dev-${{ needs.build.outputs.BUILD_VERSION }}
-        
-        # DB Configuration secrets info from Github Secrets
-        MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
-        MYSQL_ROOT_HOST=${{ secrets.MYSQL_ROOT_HOST }}
-        MYSQL_TIME_ZONE=${{ secrets.MYSQL_TIME_ZONE }}
-        DB_PORT=${{ secrets.DB_PORT }}
-        DB_IP_ADDRESS=${{ secrets.DB_IP_ADDRESS }}
-        DB_URL=${{ secrets.DB_URL }}
-        DB_USER=${{ secrets.DB_USER }}
-        DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-        DDL_AUTO=${{ secrets.DDL_AUTO }}
-
-        # DB server configuration secrets info from Github Secrets
-        APP_IP_ADDRESS=${{ secrets.APP_IP_ADDRESS }}
-        SERVER_BINDING_PORT=${{ secrets.SERVER_BINDING_PORT }}
-        SERVER_PORT=${{ secrets.SERVER_PORT }}
-        SUBNET=${{ secrets.SUBNET }}
-        
-        # Monitoring configuration server info from Github secrets
-        MONITORING_INSTANCE_ADDR_LOKI_PORT=${{ secrets.MONITORING_INSTANCE_ADDR_LOKI_PORT }}
-        MONITORING_BINDING_PORT=${{ secrets.MONITORING_BINDING_PORT }}
-        MONITORING_PORT=${{ secrets.MONITORING_PORT }}
-        MONITORING_BASE_PATH=${{ secrets.MONITORING_BASE_PATH }}
-        MONITORING_PROFILE=${{ secrets.MONITORING_PROFILE }}
-        
-        # Apply-form post URL generating format
-        APPLY_POST_BASE_URL=${{ secrets.APPLY_POST_BASE_URL }}
-
-        # Email Auth info
-        EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
-        EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-        
-        # Security settings
-        JWT_TOKEN_SECRET_KEY=${{ secrets.JWT_TOKEN_SECRET_KEY }}
-        JWT_TOKEN_EXPIRE_CYCLE=${{ secrets.JWT_TOKEN_EXPIRE_CYCLE }}
-        ACCESS_TOKEN_EXPIRE_CYCLE=${{ secrets.ACCESS_TOKEN_EXPIRE_CYCLE }}
-        REFRESH_TOKEN_EXPIRE_CYCLE=${{ secrets.REFRESH_TOKEN_EXPIRE_CYCLE }}
-        JWT_SIGN_ALGORITHM=${{ secrets.JWT_SIGN_ALGORITHM }}
-        
-        # Cookie settings
-        COOKIE_ACCESS_TOKEN_KEY=${{ secrets.COOKIE_ACCESS_TOKEN_KEY }}
-        COOKIE_REFRESH_TOKEN_KEY=${{ secrets.COOKIE_REFRESH_TOKEN_KEY }}
-        COOKIE_HTTP_ONLY=${{ secrets.COOKIE_HTTP_ONLY }}
-        COOKIE_SECURE=${{ secrets.COOKIE_SECURE }}
-        COOKIE_DOMAIN=${{ secrets.COOKIE_DOMAIN }}
-        COOKIE_PATH=${{ secrets.COOKIE_PATH }}
-        COOKIE_SAME_SITE=${{ secrets.COOKIE_SAME_SITE }}
-        COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}
-
-        # Redis
-        REDIS_PORT=${{ secrets.REDIS_PORT }}
-        REDIS_HOST=${{ secrets.REDIS_HOST }}
-        REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-        REDIS_IP_ADDRESS=${{ secrets.REDIS_IP_ADDRESS }}
         EOF
-
-    # - name: Check if MySQL container is running
-    #   id: mysql_running
-    #   run: |
-    #     if [ "$(sudo docker ps -q -f name=database-container)" ]; then
-    #       echo "mysql_running=true" >> $GITHUB_ENV
-    #     else
-    #       echo "mysql_running=false" >> $GITHUB_ENV
-    #     fi
-        
-    # - name: Start MySQL container if not running
-    #   if: env.mysql_running == 'false'
-    #   run: |
-    #     sudo docker-compose --env-file .env -f docker-compose.dev.yml up -d database-mysql
-
-    # - name: Stop and remove existing application container
-    #   run: |
-    #     sudo docker-compose -f docker-compose.dev.yml stop application
-    #     sudo docker-compose -f docker-compose.dev.yml rm -f application
-        
-    # - name: Run application Server container
-    #   run: |
-    #     sudo docker-compose --env-file .env -f docker-compose.dev.yml up -d application
 
     - name: Stop and remove existing application container
       run: |
-        sudo docker-compose -f docker-compose.dev.yml down --rmi all
-        
+        sudo docker-compose -f ./dev-files/develop/docker-compose.dev.yml --env-file ./dev-files/develop/.env down --rmi all
+
     - name: Run application Server container
       run: |
-        sudo docker-compose -f docker-compose.dev.yml up -d
+        sudo docker-compose -f ./dev-files/develop/docker-compose.dev.yml --env-file ./dev-files/develop/.env up -d

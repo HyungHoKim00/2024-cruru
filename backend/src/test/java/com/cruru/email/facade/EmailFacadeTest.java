@@ -1,7 +1,9 @@
 package com.cruru.email.facade;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,20 +11,28 @@ import static org.mockito.Mockito.when;
 
 import com.cruru.applicant.domain.Applicant;
 import com.cruru.applicant.domain.repository.ApplicantRepository;
+import com.cruru.applyform.domain.repository.ApplyFormRepository;
 import com.cruru.email.controller.request.EmailRequest;
 import com.cruru.email.controller.request.SendVerificationCodeRequest;
 import com.cruru.email.controller.request.VerifyCodeRequest;
+import com.cruru.email.controller.response.EmailHistoryResponse;
+import com.cruru.email.controller.response.EmailHistoryResponses;
 import com.cruru.email.domain.Email;
+import com.cruru.email.domain.repository.EmailRepository;
 import com.cruru.email.exception.EmailConflictException;
 import com.cruru.email.exception.badrequest.VerificationCodeMismatchException;
 import com.cruru.email.exception.badrequest.VerificationCodeNotFoundException;
 import com.cruru.email.service.EmailRedisClient;
 import com.cruru.email.service.EmailService;
 import com.cruru.member.domain.repository.MemberRepository;
+import com.cruru.process.domain.Process;
+import com.cruru.process.domain.repository.ProcessRepository;
 import com.cruru.util.ServiceTest;
 import com.cruru.util.fixture.ApplicantFixture;
+import com.cruru.util.fixture.ApplyFormFixture;
 import com.cruru.util.fixture.EmailFixture;
 import com.cruru.util.fixture.MemberFixture;
+import com.cruru.util.fixture.ProcessFixture;
 import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +53,16 @@ class EmailFacadeTest extends ServiceTest {
     private ApplicantRepository applicantRepository;
 
     @Autowired
+    private ProcessRepository processRepository;
+
+    @Autowired
+    private ApplyFormRepository applyFormRepository;
+
+    @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private EmailRepository emailRepository;
 
     @Autowired
     private EmailFacade emailFacade;
@@ -60,7 +79,9 @@ class EmailFacadeTest extends ServiceTest {
             return null;
         }).when(javaMailSender).send(any(MimeMessage.class));
 
-        Applicant applicant = applicantRepository.save(ApplicantFixture.pendingDobby());
+        applyFormRepository.save(ApplyFormFixture.backend(defaultDashboard));
+        Process process = processRepository.save(ProcessFixture.applyType(defaultDashboard));
+        Applicant applicant = applicantRepository.save(ApplicantFixture.pendingDobby(process));
         EmailRequest request = new EmailRequest(
                 defaultClub.getId(),
                 List.of(applicant.getId()),
@@ -141,5 +162,25 @@ class EmailFacadeTest extends ServiceTest {
         assertThatThrownBy(() -> emailFacade.verifyCode(request))
                 .isInstanceOf(VerificationCodeMismatchException.class)
                 .hasMessage("인증 코드가 일치하지 않습니다.");
+    }
+
+    @DisplayName("동아리와 지원자 id로 이메일을 조회한다.")
+    @Test
+    void read() {
+        // given
+        Applicant applicant = applicantRepository.save(ApplicantFixture.pendingDobby());
+        Email email = emailRepository.save(EmailFixture.rejectEmail(defaultClub, applicant));
+
+        // when
+        EmailHistoryResponses emailHistoryResponses = emailFacade.read(defaultClub.getId(), applicant.getId());
+
+        // then
+        assertThat(emailHistoryResponses.emailHistoryResponses()).hasSize(1);
+        EmailHistoryResponse emailHistoryResponse = emailHistoryResponses.emailHistoryResponses().get(0);
+        assertAll(
+                () -> assertThat(emailHistoryResponse.subject()).isEqualTo(email.getSubject()),
+                () -> assertThat(emailHistoryResponse.content()).isEqualTo(email.getContent()),
+                () -> assertThat(emailHistoryResponse.isSucceed()).isEqualTo(email.getIsSucceed())
+        );
     }
 }

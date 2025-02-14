@@ -7,8 +7,12 @@ import com.cruru.club.service.ClubService;
 import com.cruru.email.controller.request.EmailRequest;
 import com.cruru.email.controller.request.SendVerificationCodeRequest;
 import com.cruru.email.controller.request.VerifyCodeRequest;
+import com.cruru.email.controller.response.EmailHistoryResponse;
+import com.cruru.email.controller.response.EmailHistoryResponses;
+import com.cruru.email.domain.Email;
 import com.cruru.email.exception.EmailAttachmentsException;
 import com.cruru.email.exception.EmailConflictException;
+import com.cruru.email.service.EmailKeywordConverter;
 import com.cruru.email.service.EmailRedisClient;
 import com.cruru.email.service.EmailService;
 import com.cruru.email.util.FileUtil;
@@ -31,6 +35,7 @@ public class EmailFacade {
     private final ApplicantService applicantService;
     private final MemberService memberService;
     private final EmailRedisClient emailRedisClient;
+    private final EmailKeywordConverter emailKeywordConverter;
 
     public void send(EmailRequest request) {
         Club from = clubService.findById(request.clubId());
@@ -42,7 +47,10 @@ public class EmailFacade {
         List<File> tempFiles = saveTempFiles(from, subject, files);
 
         List<CompletableFuture<Void>> futures = tos.stream()
-                .map(to -> emailService.send(from, to, subject, text, tempFiles))
+                .map(to -> {
+                    String content = emailKeywordConverter.convert(text, from, to);
+                    return emailService.send(from, to, subject, content, tempFiles);
+                })
                 .map(future -> future.thenAccept(emailService::save))
                 .toList();
 
@@ -79,5 +87,23 @@ public class EmailFacade {
 
         VerificationCodeUtil.verify(storedVerificationCode, inputVerificationCode);
         emailRedisClient.saveVerifiedEmail(email);
+    }
+
+    public EmailHistoryResponses read(long clubId, long applicantId) {
+        Club club = clubService.findById(clubId);
+        Applicant applicant = applicantService.findById(applicantId);
+        List<Email> emails = emailService.findAllByFromAndTo(club, applicant);
+        return new EmailHistoryResponses(emails.stream()
+                .map(this::toEmailResponse)
+                .toList());
+    }
+
+    private EmailHistoryResponse toEmailResponse(Email email) {
+        return new EmailHistoryResponse(
+                email.getSubject(),
+                email.getContent(),
+                email.getCreatedDate(),
+                email.getIsSucceed()
+        );
     }
 }
