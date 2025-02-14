@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { hideScrollBar } from '@styles/utils';
 
 const Container = styled.div`
   width: 80vw;
@@ -26,6 +27,7 @@ const ModalHeader = styled.div`
 const ModalSidebar = styled.div`
   grid-area: sidebar;
   border-right: 0.1rem solid ${({ theme }) => theme.baseColors.grayscale[600]};
+  padding: 3.2rem 1.6rem;
 `;
 
 const ModalNav = styled.div`
@@ -61,6 +63,7 @@ const ModalMain = styled.div`
   grid-area: main;
   border-right: 0.1rem solid ${({ theme }) => theme.baseColors.grayscale[600]};
   overflow: auto;
+  ${hideScrollBar}
 `;
 
 const ModalAsideHeader = styled.div`
@@ -71,7 +74,7 @@ const ModalAsideHeader = styled.div`
 
 const ModalAside = styled.div`
   grid-area: aside;
-  padding: 1.6rem; //TODO: Refactor
+  padding: 1.6rem;
   overflow: auto;
 `;
 
@@ -81,10 +84,42 @@ const ModalEvalHeader = styled.div`
   border-bottom: 0.1rem solid ${({ theme }) => theme.baseColors.grayscale[600]};
 `;
 
+const ModalMenus = styled.div`
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
+
+const ModalMenusTitle = styled.div`
+  height: 2rem;
+  color: ${({ theme }) => theme.baseColors.grayscale[500]};
+  ${({ theme }) => theme.typography.heading[400]}
+
+  margin-bottom: -0.6rem;
+`;
+
+const ModalMenusItem = styled.div<{ isSelected: boolean }>`
+  ${({ theme }) => theme.typography.heading[400]}
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  color: ${({ theme, isSelected }) => (isSelected ? theme.baseColors.grayscale[900] : theme.baseColors.grayscale[600])};
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const S = {
   Container,
   ModalHeader,
   ModalSidebar,
+  ModalMenus,
+  ModalMenusTitle,
+  ModalMenusItem,
   ModalNav,
   ModalNavHeaderContainer,
   ModalNavHeader,
