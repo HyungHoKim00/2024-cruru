@@ -24,18 +24,19 @@ const Title = styled.div`
   color: ${({ theme }) => theme.baseColors.grayscale[900]};
 `;
 
-const Status = styled.div<{ status: '발송완료' | '발송실패' | '전송중' }>`
+const Status = styled.div<{ status: 'PENDING' | 'DELIVERED' | 'FAILED' }>`
   ${({ theme }) => theme.typography.common.small};
   padding: 0.4rem 0.8rem;
   border-radius: 0.4rem;
 
   background-color: ${({ theme, status }) => {
-    if (status === '발송실패') return theme.baseColors.redscale[50];
-    if (status === '전송중') return theme.baseColors.grayscale[300];
+    if (status === 'FAILED') return theme.baseColors.redscale[50];
+    if (status === 'PENDING') return theme.baseColors.grayscale[300];
     return theme.baseColors.grayscale[300];
   }};
   color: ${({ theme, status }) => {
-    if (status === '발송실패') return theme.baseColors.redscale[800];
+    if (status === 'FAILED') return theme.baseColors.redscale[800];
+    if (status === 'PENDING') return theme.baseColors.grayscale[800];
     return theme.baseColors.grayscale[800];
   }};
 `;
