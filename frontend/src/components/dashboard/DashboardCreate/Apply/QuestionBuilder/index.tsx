@@ -93,7 +93,7 @@ export default function QuestionBuilder({
             type="text"
             placeholder="질문을 입력하세요."
             onChange={handleChangeTitle}
-            maxLength={50}
+            maxLength={150}
             value={title}
             isLengthVisible
             required
