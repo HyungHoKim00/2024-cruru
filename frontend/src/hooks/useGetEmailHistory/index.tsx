@@ -22,6 +22,7 @@ export default function useGetEmailHistory({ applicantId }: UseGetEmailHistoryPr
     queryKey: createEmailHistoryQueryKey(clubId, applicantId),
     queryFn: () => emailApis.history({ clubId, applicantId }),
     initialData: { emailHistoryResponses: [] },
+    refetchInterval: 3000, // 3 seconds
   });
 
   return {
