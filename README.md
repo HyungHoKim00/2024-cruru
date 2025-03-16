@@ -12,7 +12,9 @@
 
 서비스 ‘크루루’는 대학생 연합 동아리를 위한 ATS(지원자 추적 시스템)입니다.  모집 공고 관리, 지원자 목록 관리, 지원 항목 커스터마이징 등을 제공합니다. 해당 서비스를 통해 소규모 리크루팅 프로세스를 효율적으로 관리할 수 있습니다.
 
-# 나의 주요 기여
+# 저의 역할
+
+## 주요 기여
 
 이메일 비동기 전송 구현 - [정리 글](https://blog.cruru.kr/docs/backend/%EC%9D%B4%EB%A9%94%EC%9D%BC-%EB%B0%9C%EC%86%A1-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%A0%81%EC%9A%A9%EA%B8%B0-fff1e50d803f813bae2eea918fcf0302/)   
 API 문서화 - [정리 글](https://blog.cruru.kr/docs/backend/restdocs-%EB%8F%84%EC%9E%85%ED%95%98%EA%B8%B0-fff1e50d803f8139a486c56e6c397adb/)   
