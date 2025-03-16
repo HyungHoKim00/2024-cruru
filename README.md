@@ -14,6 +14,8 @@
 
 # 저의 역할
 
+백엔드 및 인프라
+
 ## 주요 기여
 
 이메일 비동기 전송 구현 - [정리 글](https://blog.cruru.kr/docs/backend/%EC%9D%B4%EB%A9%94%EC%9D%BC-%EB%B0%9C%EC%86%A1-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%A0%81%EC%9A%A9%EA%B8%B0-fff1e50d803f813bae2eea918fcf0302/)   
