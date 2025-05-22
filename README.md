@@ -18,6 +18,7 @@
 
 ## 주요 기여
 
+'지원자' 도메인 API 및 데이터베이스 설계, 구현
 이메일 비동기 전송 구현 - [정리 글](https://blog.cruru.kr/docs/backend/%EC%9D%B4%EB%A9%94%EC%9D%BC-%EB%B0%9C%EC%86%A1-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%A0%81%EC%9A%A9%EA%B8%B0-fff1e50d803f813bae2eea918fcf0302/)   
 API 문서화 - [정리 글](https://blog.cruru.kr/docs/backend/restdocs-%EB%8F%84%EC%9E%85%ED%95%98%EA%B8%B0-fff1e50d803f8139a486c56e6c397adb/)   
 k6 부하 테스트 및 서버 성능 측정 - [정리 글](https://blog.cruru.kr/docs/infra/%EB%B6%80%ED%95%98-%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%A1%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0-60bb8cbedc2743179befc3af6eb42037/)  
